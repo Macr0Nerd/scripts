@@ -14,6 +14,10 @@ class WUF(Generic[T]):
 
         This is a generic class meaning that the key type will need to be specified, such as WUF[int].
         This generic type will be denoted as T henceforth.
+
+    .. note::
+
+        This implementation does utilize path compression.
     """
 
     Pair = List[T, int]
@@ -75,6 +79,7 @@ class WUF(Generic[T]):
 
         root = uid
         while root != self.tree[root][0]:
+            self.tree[root][0] = self.tree[self.tree[root][0]][0]
             root = self.tree[root][0]
 
         return root
