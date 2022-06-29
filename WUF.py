@@ -1,46 +1,55 @@
-class WUF:
+from typing import TypeVar, Generic, Dict, List, Set
+
+T = TypeVar('T')
+
+
+class WUF(Generic[T]):
     """This class implements the Weighted Union Find (WUF) data structure.
 
     This data structure is an implementation of a disjoint-set structure, which organizes data into independent groups.
     This can be used to determine if two points on a graph are connected, or if there are cycles in an undirected graph
     that has no self loops.
+
+    .. important::
+
+        This is a generic class meaning that the key type will need to be specified, such as WUF[int].
+        This generic type will be denoted as T henceforth.
     """
 
-    Pair = list[str, int]
+    Pair = List[T, int]
     """A data type used to combine the root and size information into a single location."""
 
-    def __init__(self, tree: dict[str, Pair] = None):
-        """initializes the WUF.
+    def __init__(self, tree: Dict[T, Pair] = None):
+        """initializes the WUF instance
 
-        A fairly standard __init__ function to initialize the data necessary for the WUF.
-        If a tree is not provided, an empty tree is created.
+        Initializes the tree with a key type of T that corresponds to a pair with root of that index and its size.
 
         :param self: self
         :param tree: the tree structure to construct the WUF from
-        :type tree: dict[str, (str, int)]
+        :type tree: dict[T, [T, int]]
         """
         if not tree:
             tree = {}
 
-        self.tree: dict[str, WUF.Pair] = tree
+        self.tree: Dict[T, WUF.Pair] = tree
         """Used to store the WUF tree with the student ID and it's corresponding root information."""
 
     def __iter__(self):
-        """returns the tree to use as an iterable
+        """returns the tree iterable
 
         :param self: self
         :returns: the tree iterator
         """
         return self.tree.__iter__()
 
-    def add_root(self, uid: str) -> bool:
+    def add_root(self, uid: T) -> bool:
         """returns the success of adding the root
 
         Adds a new root to the tree with its root set to self (meaning it's top level) and with a size of one.
 
         :param self: self
         :param uid: the Student ID to add to the tree
-        :type uid: str
+        :type uid: T
         :returns: whether the operation succeeded
         :rtype: bool
         """
@@ -50,16 +59,16 @@ class WUF:
 
         return False
 
-    def get_root(self, uid: str) -> str:
+    def get_root(self, uid: T) -> T:
         """returns the root of the union the id is in
 
         This function traverses the tree in order to find the root of the union that ID is a part of.
 
         :param self: self
-        :param uid: the Student ID to retrieve the union for
-        :type uid: str
-        :returns: the root student ID in the union
-        :rtype: str
+        :param uid: the key to retrieve the union for
+        :type uid: T
+        :returns: the root in the union
+        :rtype: T
         """
         if uid not in self.tree:
             raise IndexError(f"{uid} is not in the tree")
@@ -70,7 +79,7 @@ class WUF:
 
         return root
 
-    def get_root_groups(self) -> dict[str, set[str]]:
+    def get_root_groups(self) -> Dict[T, set[T]]:
         """returns the tree in the format of root groups
 
         This function will parse the tree and return it as root groups such that the top level roots are the dictionary
@@ -78,9 +87,9 @@ class WUF:
 
         :param self: self
         :returns: the root group version of the tree
-        :rtype: dict[str, list[str]]
+        :rtype: dict[T, list[T]]
         """
-        rootGroups: dict[str, set[str]] = {}
+        rootGroups: Dict[T, Set[T]] = {}
 
         for key in self.tree:
             root: str = self.get_root(key)
@@ -92,7 +101,7 @@ class WUF:
 
         return rootGroups
 
-    def union(self, p: str, q: str) -> None:
+    def union(self, p: T, q: T) -> None:
         """unions two items in the tree
 
         Unions data in the tree using the WUF algorithm.
@@ -102,8 +111,8 @@ class WUF:
         :param self: Self
         :param p: the first item to union
         :param q: the second item to union
-        :type p: str
-        :type q: str
+        :type p: T
+        :type q: T
         """
 
         pRoot = self.get_root(p)
