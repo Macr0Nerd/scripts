@@ -1,45 +1,29 @@
 class WUF:
-    """This class implements the Weighted Union Find (WUF) data structure for contact tracing."""
+    """This class implements the Weighted Union Find (WUF) data structure.
+
+    This data structure is an implementation of a disjoint-set structure, which organizes data into independent groups.
+    This can be used to determine if two points on a graph are connected, or if there are cycles in an undirected graph
+    that has no self loops.
+    """
 
     Pair = list[str, int]
     """A data type used to combine the root and size information into a single location."""
 
-    def __init__(self, iTree: dict[str, Pair] = None):
+    def __init__(self, tree: dict[str, Pair] = None):
         """initializes the WUF.
 
-        A fairly standard __init__ function to initliaze the data necessary for the WUF.
+        A fairly standard __init__ function to initialize the data necessary for the WUF.
         If a tree is not provided, an empty tree is created.
 
         :param self: self
-        :param iTree: the tree structure to construct the WUF from
-        :type iTree: dict[str, (str, int)]
+        :param tree: the tree structure to construct the WUF from
+        :type tree: dict[str, (str, int)]
         """
-        if not iTree:
-            iTree = {}
+        if not tree:
+            tree = {}
 
-        self.tree: dict[str, WUF.Pair] = iTree
+        self.tree: dict[str, WUF.Pair] = tree
         """Used to store the WUF tree with the student ID and it's corresponding root information."""
-
-    def __eq__(self, other: "WUF") -> bool:
-        """returns if two WUF objects have the same tree
-
-        :param self: self
-        :param other: the WUF object to compare to
-        :type other: WUF
-        :returns: if the two trees are equal
-        :rtype: bool
-        """
-        return self.tree == other.tree
-
-    def __len__(self) -> int:
-        """returns the size of the tree
-
-        :param self: self
-        :returns: the length of the tree
-        :rtype: int
-        """
-
-        return len(self.tree)
 
     def __iter__(self):
         """returns the tree to use as an iterable
@@ -49,19 +33,8 @@ class WUF:
         """
         return self.tree.__iter__()
 
-    def __getitem__(self, item: int) -> Pair:
-        """returns the value in tree at index item
-
-        :param self: self
-        :param item: the index to find the value at
-        :type item: int
-        :returns: the value in tree at item
-        :rtype: list[str, int]
-        """
-        return self.tree[item]
-
-    def addRoot(self, uid: str) -> bool:
-        """returns whether the operation was successful
+    def add_root(self, uid: str) -> bool:
+        """returns the success of adding the root
 
         Adds a new root to the tree with its root set to self (meaning it's top level) and with a size of one.
 
@@ -77,7 +50,7 @@ class WUF:
 
         return False
 
-    def getRoot(self, uid: str) -> str:
+    def get_root(self, uid: str) -> str:
         """returns the root of the union the id is in
 
         This function traverses the tree in order to find the root of the union that ID is a part of.
@@ -97,7 +70,7 @@ class WUF:
 
         return root
 
-    def getRootGroups(self) -> dict[str, list[str]]:
+    def get_root_groups(self) -> dict[str, set[str]]:
         """returns the tree in the format of root groups
 
         This function will parse the tree and return it as root groups such that the top level roots are the dictionary
@@ -107,16 +80,15 @@ class WUF:
         :returns: the root group version of the tree
         :rtype: dict[str, list[str]]
         """
-        rootGroups: dict[str, list[str]] = {}
+        rootGroups: dict[str, set[str]] = {}
 
         for key in self.tree:
-            root: str = self.getRoot(key)
+            root: str = self.get_root(key)
 
             if root not in rootGroups:
-                rootGroups[root] = []
+                rootGroups[root] = set()
 
-            if key not in rootGroups[root]:
-                rootGroups[root].append(key)
+            rootGroups[root].add(key)
 
         return rootGroups
 
@@ -134,8 +106,8 @@ class WUF:
         :type q: str
         """
 
-        pRoot = self.getRoot(p)
-        qRoot = self.getRoot(q)
+        pRoot = self.get_root(p)
+        qRoot = self.get_root(q)
 
         if pRoot == qRoot:
             return
