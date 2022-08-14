@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-project(${PROJECT_NAME) VERSION 0.0.0 LANGUAGES CXX)
+project(${PROJECT_NAME} VERSION 0.0.0 LANGUAGES CXX)
 
-#########################
-# Create & Link Library #
-#########################
+#################################
+# This is to create the library #
+#################################
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(GRon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Uncomment to add application to library
 # Don't forget to comment out the existing set_target_properties
-#add_executable(${PROJECT_NAME}_app app/main.cpp)
-#target_link_libraries(${PROJECT_NAME}_app PRIVATE GRon::Graph)
+# add_executable(${PROJECT_NAME}_app app/main.cpp)
+# target_link_libraries(${PROJECT_NAME}_app PRIVATE GRon::${PROJECT_NAME})
 
-#set_target_properties(${PROJECT_NAME} ${PROJECT_NAME}_exe PROPERTIES
+# set_target_properties(FibonacciHeap FibonacciHeap_app PROPERTIES
 #        CXX_STANDARD 17
 #        CXX_STANDARD_REQUIRED ON
 #        CXX_EXTENSIONS OFF
@@ -33,9 +33,15 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-###################
-# Install Library #
-###################
+# add_subdirectory(src)
+
+# if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+#     include(CTest)
+# endif ()
+
+##########################
+# Installing the library #
+##########################
 
 include(GNUInstallDirs)
 set(INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
@@ -80,3 +86,8 @@ export(
 
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 export(PACKAGE ${PROJECT_NAME})
+
+# if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+#     add_subdirectory(tests)
+# endif ()
+
