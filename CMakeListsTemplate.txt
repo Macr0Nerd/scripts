@@ -13,7 +13,7 @@ add_library(GRon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # add_executable(${PROJECT_NAME}_app app/main.cpp)
 # target_link_libraries(${PROJECT_NAME}_app PRIVATE GRon::${PROJECT_NAME})
 
-# set_target_properties(FibonacciHeap FibonacciHeap_app PROPERTIES
+# set_target_properties(${PROJECT_NAME} ${PROJECT_NAME}_app PROPERTIES
 #        CXX_STANDARD 17
 #        CXX_STANDARD_REQUIRED ON
 #        CXX_EXTENSIONS OFF
