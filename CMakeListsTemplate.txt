@@ -20,7 +20,7 @@ add_library(GRon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 #        PREFIX ""
 #        )
 
-set_target_properties(${PROJECT_NAME} ${PROJECT_NAME}_exe PROPERTIES
+set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
