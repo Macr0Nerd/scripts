@@ -1,5 +1,6 @@
 import argparse
 import contextlib
+import importlib.metadata
 import json
 import logging
 import sys
@@ -29,6 +30,8 @@ def arguments() -> dict:
                                       action='store_const', const='text', dest='format')
     parser_output_format.add_argument('--json', help='output in JSON format',
                                       action='store_const', const='json', dest='format')
+    parser_output_format.add_argument('--pandas-parquet', help='output a Pandas dataframe to a parquet',
+                                      action='store_const', const='pandas-parquet', dest='format')
 
     parser_logging = parser.add_argument_group(title='logging arguments')
     parser_logging.add_argument('-v', '--verbose', help='get verbose output', action='count', default=0)
@@ -42,6 +45,29 @@ def arguments() -> dict:
 
     if not args.get('format'):
         args['format'] = 'text'
+    elif 'pandas' in args['format']:
+        try:
+            pandas_version = importlib.metadata.version('pandas')
+            logger.info('Found Pandas version %s', pandas_version)
+        except importlib.metadata.PackageNotFoundError as exc:
+            logger.error('Pandas output was specified, but Pandas is not available')
+            sys.exit(1)
+
+        if args['format'] == 'pandas-parquet':
+            try:
+                parquet_version = importlib.metadata.version('pyarrow')
+                logger.info('Found PyArrow version %s', parquet_version)
+            except importlib.metadata.PackageNotFoundError as exc:
+                try:
+                    parquet_version = importlib.metadata.version('fastparquet')
+                    logger.info('Found FastParquet version %s', parquet_version)
+                except importlib.metadata.PackageNotFoundError as exc:
+                    logger.error('Pandas parquet output was specified, but no parquet backend was found')
+                    sys.exit(1)
+
+            if not args.get('output'):
+                logger.error('Pandas-parquet format requires an output file to be specified')
+                sys.exit(1)
 
     return args
 
@@ -62,12 +88,22 @@ def generate_output(data: dict, *, outfile: str = None, format: str = None, **_)
         format = 'text'
 
     out = ''
+
+    # This allows for the file to be written as a string or binary, that way it can handle
+    # data like parquets. NOTE: sys.stdout __cannot__ accept binary so you must check that
+    # you're not writing to sys.stdout.
     flags = 'w'
 
     if format == 'text':
         out = str(data)
     elif format == 'json':
         out = json.dumps(data)
+    elif format == 'pandas-parquet':
+        from pandas import DataFrame
+
+        flags += 'b'
+
+        out = DataFrame.from_dict(data).to_parquet()
 
     try:
         with open(outfile, flags) if outfile else contextlib.nullcontext(sys.stdout) as f:
