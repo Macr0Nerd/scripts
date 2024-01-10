@@ -26,12 +26,16 @@ def arguments() -> dict:
     parser_output.add_argument('-o', '--outfile', help='output to a file')
 
     parser_output_format = parser_output.add_mutually_exclusive_group()
-    parser_output_format.add_argument('--text', help='output a Python dict',
-                                      action='store_const', const='text', dest='format')
+    parser_output_format.add_argument('--csv', help='output in CSV format',
+                                      action='store_const', const='csv', dest='format')
     parser_output_format.add_argument('--json', help='output in JSON format',
                                       action='store_const', const='json', dest='format')
     parser_output_format.add_argument('--pandas-parquet', help='output a Pandas dataframe to a parquet',
                                       action='store_const', const='pandas-parquet', dest='format')
+    parser_output_format.add_argument('--python', help='output a Python dict',
+                                      action='store_const', const='python', dest='format')
+    parser_output_format.add_argument('--text', help='output in a human readable format',
+                                      action='store_const', const='text', dest='format')
 
     parser_logging = parser.add_argument_group(title='logging arguments')
     parser_logging.add_argument('-v', '--verbose', help='get verbose output', action='count', default=0)
@@ -45,7 +49,7 @@ def arguments() -> dict:
 
     if not args.get('format'):
         args['format'] = 'text'
-    elif 'pandas' in args['format']:
+    elif args['format'] in ['csv', 'pandas-parquet']:
         try:
             pandas_version = importlib.metadata.version('pandas')
             logger.info('Found Pandas version %s', pandas_version)
@@ -101,9 +105,16 @@ def generate_output(data: dict, *, outfile: str = None, format: str = None, **_)
     elif format == 'pandas-parquet':
         from pandas import DataFrame
 
-        flags += 'b'
+        rows = []
+        for k, v in data.items():
+            rows.append(v)
 
-        out = DataFrame.from_dict(data).to_parquet()
+        df = DataFrame.from_dict(rows)
+        if format == 'csv':
+            out = df.to_csv()
+        elif format == 'pandas-parquet':
+            flags += 'b'
+            out = df.to_parquet()
 
     try:
         with open(outfile, flags) if outfile else contextlib.nullcontext(sys.stdout) as f:
