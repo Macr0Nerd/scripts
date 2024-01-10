@@ -69,7 +69,7 @@ def arguments() -> dict:
                     logger.error('Pandas parquet output was specified, but no parquet backend was found')
                     sys.exit(1)
 
-            if not args.get('output'):
+            if not args.get('outfile'):
                 logger.error('Pandas-parquet format requires an output file to be specified')
                 sys.exit(1)
 
