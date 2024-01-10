@@ -18,7 +18,7 @@ def arguments() -> dict:
     parser = argparse.ArgumentParser(
         prog='devops_template.py',
         description='template script for developer operations tasks',
-        epilog='Developed by Gabriele Ron (gron@groncyber.com)'
+        epilog='Developed by Gabriele Ron (developer@groncyber.com)'
     )
 
 
