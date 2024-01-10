@@ -47,14 +47,14 @@ def arguments() -> dict:
 
     args = vars(parser.parse_args())
 
-    if not args.get('format'):
+        if not args.get('format'):
         args['format'] = 'text'
     elif args['format'] in ['csv', 'pandas-parquet']:
         try:
             pandas_version = importlib.metadata.version('pandas')
             logger.info('Found Pandas version %s', pandas_version)
         except importlib.metadata.PackageNotFoundError as exc:
-            logger.error('Pandas output was specified, but Pandas is not available')
+            logger.error('An output mode that requires pandas was specified, but pandas is not available')
             sys.exit(1)
 
         if args['format'] == 'pandas-parquet':
@@ -66,11 +66,11 @@ def arguments() -> dict:
                     parquet_version = importlib.metadata.version('fastparquet')
                     logger.info('Found FastParquet version %s', parquet_version)
                 except importlib.metadata.PackageNotFoundError as exc:
-                    logger.error('Pandas parquet output was specified, but no parquet backend was found')
+                    logger.error('Parquet output was specified, but no parquet backend was found')
                     sys.exit(1)
 
             if not args.get('outfile'):
-                logger.error('Pandas-parquet format requires an output file to be specified')
+                logger.error('The parquet format requires an output file to be specified')
                 sys.exit(1)
 
     return args
