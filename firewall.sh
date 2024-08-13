@@ -6,19 +6,16 @@ set -e
 # Variables #
 #############
 
-DNS=(192.168.42.2 10.0.42.5 1.1.1.1)
-NTP=(192.168.42.2 10.0.42.5)
+DNS=(192.168.0.1)
+NTP=(192.168.0.1)
 
 declare -A INPUT_TCP
 declare -A INPUT_UDP
 declare -A OUTPUT_TCP
 declare -A OUTPUT_UDP
 
-INPUT_TCP['192.168.42.0/24']='22'
-INPUT_TCP['192.168.63.3/32']='22'
-
-#INPUT_TCP['0.0.0.0/0']=''
-#INPUT_UDP['0.0.0.0/0']=''
+INPUT_TCP['0.0.0.0/0']=''
+INPUT_UDP['0.0.0.0/0']=''
 OUTPUT_TCP['0.0.0.0/0']=''
 OUTPUT_UDP['0.0.0.0/0']=''
 
