@@ -102,7 +102,7 @@ def generate_output(data: dict, *, outfile: str = None, format: str = None, **_)
         out = str(data)
     elif format == 'json':
         out = json.dumps(data)
-    elif format == 'pandas-parquet':
+    elif format in ['csv', 'pandas-parquet']:
         from pandas import DataFrame
 
         rows = []
@@ -111,10 +111,10 @@ def generate_output(data: dict, *, outfile: str = None, format: str = None, **_)
 
         df = DataFrame.from_dict(rows)
         if format == 'csv':
-            out = df.to_csv()
+            out = df.to_csv(index=False)
         elif format == 'pandas-parquet':
             flags += 'b'
-            out = df.to_parquet()
+            out = df.to_parquet(index=False)
 
     try:
         with open(outfile, flags) if outfile else contextlib.nullcontext(sys.stdout) as f:
