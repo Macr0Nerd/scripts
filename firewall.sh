@@ -161,10 +161,10 @@ for key in "${!INPUT_TCP[@]}"; do
             ports_s="-m multiport --sports ${INPUT_TCP[$key]}"
         fi
     
-        iptables -A INPUT -p tcp -s $key $ports -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
+        iptables -A INPUT -p tcp -s $key $ports_d -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
 
         if [ "$MIRROR_RULES" = "true" ]; then
-            iptables -A OUTPUT -p tcp -s $key $ports -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
+            iptables -A OUTPUT -p tcp -s $key $ports_s -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
         fi
     fi
 done
@@ -178,10 +178,10 @@ for key in "${!INPUT_UDP[@]}"; do
             ports_s="-m multiport --sports ${INPUT_UDP[$key]}"
         fi
     
-        iptables -A INPUT -p udp -s $key $ports -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
+        iptables -A INPUT -p udp -s $key $ports_d -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
 
         if [ "$MIRROR_RULES" = "true" ]; then
-            iptables -A OUTPUT -p udp -s $key $ports -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
+            iptables -A OUTPUT -p udp -s $key $ports_s -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
         fi
     fi
 done
@@ -195,10 +195,10 @@ for key in "${!OUTPUT_TCP[@]}"; do
             ports_s="-m multiport --sports ${OUTPUT_TCP[$key]}"
         fi
     
-        iptables -A OUTPUT -p tcp -s $key $ports -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
+        iptables -A OUTPUT -p tcp -s $key $ports_d -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
 
         if [ "$MIRROR_RULES" = "true" ]; then
-            iptables -A INPUT -p tcp -s $key $ports -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
+            iptables -A INPUT -p tcp -s $key $ports_s -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
         fi
     fi
 done
@@ -212,10 +212,10 @@ for key in "${!OUTPUT_UDP[@]}"; do
             ports_s="-m multiport --sports ${OUTPUT_UDP[$key]}"
         fi
     
-        iptables -A OUTPUT -p udp -s $key $ports -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
+        iptables -A OUTPUT -p udp -s $key $ports_d -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_LOG
 
         if [ "$MIRROR_RULES" = "true" ]; then
-            iptables -A INPUT -p udp -s $key $ports -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
+            iptables -A INPUT -p udp -s $key $ports_s -m state --state ESTABLISHED,RELATED -j ACCEPT_LOG
         fi
     fi
 done
