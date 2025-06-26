@@ -1,38 +1,77 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-_help="Usage: $(basename $0) [OPTIONS]
-$0 is a template for future shell scripts.
-Example: $0 -h
+help() {
+  echo "Usage: $(basename $0) [OPTIONS]
+  $0 is a template for future shell scripts.
 
-Options:
-	-h, --help	Outputs the help message for this command."
+  Example: $0 -h
 
-_basic="Usage: $0 [OPTIONS]
-Try $0 --help for more information."
+  Options:
+    -h, --help	Outputs the help message for this command.
+  "
+}
 
-# Options strings
-SHORT=h
-LONG=help
+parse_flag() {
+  local SHIFT=0
 
-OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
+  case $1 in
+    h|help)
+      help
+      exit 0
+      ;;
+    f|file)
+      if [[ -n "$2" ]]; then
+        FILE="$2"
+        SHIFT=1
+      else
+        echo 'File not specified'
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Unrecognized argument: $1"
+      ;;
+  esac
 
-if [[ $? != 0 ]]; then echo "Failed to parse options... exiting." >&2;
-exit 1; fi
+  return $SHIFT
+}
 
-eval set -- "$OPTS"
+POSITIONAL_ARGS=()
 
-if [[ $# = 1 ]]; then echo "$_basic"; exit 1; fi
+if [[ $# -eq 0 ]]; then
+  help
+  exit 0
+fi
 
-while true; do
-	case "$1" in
-		-h | --help )
-			echo "$_help"
-			shift
-			;;
-		-- )
-			shift
-			break
-			;;
-	esac
+while [[ $# -gt 0 ]]; do
+  if [[ $1 == --* ]]; then
+    if ! parse_flag "${1#--}" "$2"; then
+      shift
+    fi
+
+    shift
+  elif [[ $1 == -* ]]; then
+    OPTS="${1#-}"
+    SHIFT=0
+
+    if [[ $2 == -* ]]; then
+      VAL=""
+    else
+      VAL="$2"
+    fi
+
+    for (( i=0; i<${#OPTS}; i++ )); do
+      parse_flag "${OPTS:$i:1}" "$VAL"
+      (( SHIFT+=$? ))
+    done
+
+    if [[ $SHIFT -ne 0 ]]; then
+      shift
+    fi
+
+    shift
+  else
+    POSITIONAL_ARGS+=("$1")
+    shift
+  fi
 done
-
